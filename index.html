@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>เครื่องมือกรอกสัญญาเช่าบ้าน</title>
+<style>
+:root{
+  --ink:#1b1d1b;--muted:#68706b;--line:#c9cec8;--soft:#f3f5f1;--paper:#fff;
+  --accent:#607d68;--accent-dark:#31513b;--warm:#f7f6f1;
+  --serif:ui-serif,Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;
+  --mono:ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--warm)}
+body{margin:0;padding:28px 16px 92px;background:var(--warm);color:#3c433e;font:15px/1.55 var(--sans)}
+.page{max-width:1020px;margin:0 auto}
+.app-header{margin:0 auto 22px;max-width:900px}
+.eyebrow{font:11px var(--mono);letter-spacing:.07em;color:#80877f;text-transform:uppercase}
+h1{margin:5px 0 3px;color:var(--ink);font:500 32px/1.2 var(--serif)}
+.app-header p{margin:0;color:var(--muted);font-size:14px}
+.editor-card,.preview-card{margin:14px auto;background:var(--paper);border:1px solid #d9ddd7;border-radius:14px;padding:22px;box-shadow:0 8px 24px #26382c0b}
+.editor-card{max-width:900px}
+.editor-section{padding:0 0 20px;margin:0 0 20px;border-bottom:1px solid #e2e5e1}
+.editor-section:last-of-type{margin-bottom:16px}
+.editor-section h2{margin:0 0 14px;color:var(--ink);font:600 20px/1.25 var(--serif)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.field{min-width:0}.field.wide{grid-column:1/-1}
+label{display:block;margin:0 0 5px;color:#434a45;font-size:13px;font-weight:650}
+input,textarea{display:block;width:100%;border:1px solid #cbd1ca;border-radius:8px;background:#fff;color:var(--ink);font:inherit;padding:9px 10px;outline:none}
+textarea{min-height:72px;resize:vertical}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #607d6822}
+.hint{margin-top:4px;color:#858c85;font-size:11px;line-height:1.35}
+.notice{margin-top:2px;padding:11px 13px;border-left:3px solid #8b9d8b;border-radius:7px;background:#f2f5f0;color:#59645b;font-size:12px}
+.preview-card{padding:0;overflow:hidden}
+.preview-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:20px 22px 14px}
+.preview-heading h2{margin:0;color:var(--ink);font:600 20px/1.25 var(--serif)}
+.preview-heading small{color:#8a918b;font:11px var(--mono)}
+.preview-shell{padding:0 20px 24px;background:#eef0eb;border-top:1px solid #e1e4df;overflow:auto}
+.contract-paper{width:min(100%,794px);min-height:1123px;margin:20px auto 0;padding:46px 48px 40px;background:#fff;color:var(--ink);box-shadow:0 5px 18px #28372c1c;font-family:var(--sans);font-size:12px;line-height:1.42}
+.paper-header{text-align:center;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:12px}
+.paper-kicker{color:#6c766e;font:10px var(--mono);letter-spacing:.1em}
+.paper-header h2{margin:2px 0 2px;font:700 24px/1.25 var(--serif);letter-spacing:.02em}
+.paper-header p{margin:0;color:#4f5750;font-size:11px}
+.paper-section{margin:0 0 9px;break-inside:avoid}
+.section-heading{display:flex;align-items:center;gap:7px;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid var(--line)}
+.section-no{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--accent-dark);color:#fff;font:700 11px/1 var(--mono)}
+.section-heading h3{margin:0;color:#253229;font-size:13px;line-height:1.25;font-weight:750}
+.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.party-box{padding:7px 9px;border:1px solid #d4d9d3;border-radius:5px;background:#fbfcfa}
+.party-box h4{margin:0 0 3px;color:var(--accent-dark);font-size:11px;font-weight:800}
+.party-row{display:flex;gap:7px;min-height:17px}.party-row .key{flex:0 0 auto;color:#657067}.party-row .value{min-width:0;flex:1;font-weight:600;overflow-wrap:anywhere}
+.property-box,.extra-box{min-height:30px;padding:7px 9px;border:1px solid #d4d9d3;border-radius:5px;background:#fbfcfa;white-space:pre-line;overflow-wrap:anywhere}
+.data-grid{display:grid;gap:7px}.data-grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}.data-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.data-grid.five{grid-template-columns:repeat(5,minmax(0,1fr))}
+.data-cell{min-width:0;padding:6px 8px;border:1px solid #d4d9d3;border-radius:5px;background:#fbfcfa}.data-cell .key{display:block;color:#68736b;font-size:10px;line-height:1.2}.data-cell .value{display:block;margin-top:2px;min-height:17px;font-weight:700;overflow-wrap:anywhere}
+.clauses{display:grid;grid-template-columns:1fr 1fr;gap:3px 14px;margin:0;padding:0;list-style:none;counter-reset:clause}
+.clauses li{position:relative;padding-left:22px;color:#343b35;font-size:10.5px;line-height:1.4;counter-increment:clause}
+.clauses li::before{content:counter(clause,decimal-leading-zero);position:absolute;left:0;top:0;color:var(--accent-dark);font:700 10px var(--mono)}
+.extra-box{min-height:38px;font-size:11px}
+.signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);break-inside:avoid}
+.signature{text-align:center;color:#303731;font-size:11px}.signature .line{height:22px;margin:0 20px 3px;border-bottom:1px solid #4d554e}.signature .date-line{display:inline-block;min-width:112px;margin-left:4px;border-bottom:1px solid #4d554e}
+.paper-foot{margin-top:12px;color:#8a918b;text-align:center;font-size:9px}
+.toolbar{position:fixed;right:0;bottom:0;left:0;z-index:10;display:flex;justify-content:flex-end;gap:9px;padding:11px max(16px,calc((100vw - 1020px)/2));border-top:1px solid #d9ddd7;background:#f7f8f5ee;backdrop-filter:blur(10px)}
+.btn{border:1px solid #c6ccc5;border-radius:999px;padding:9px 14px;background:transparent;color:#3d463f;font:12px var(--mono);cursor:pointer}.btn:hover{background:#edf1ec}.btn.primary{border-color:#334e3b;background:#334e3b;color:#fff}.btn.primary:hover{background:#263d2d}.btn.success{border-color:#6b8c72;background:#6b8c72;color:#fff}
+@media(max-width:720px){body{padding:20px 12px 88px}.editor-card{padding:16px}.grid,.grid.three{grid-template-columns:1fr 1fr}.field.wide{grid-column:1/-1}.preview-shell{padding:0 10px 16px}.contract-paper{padding:30px 26px 28px;font-size:11px}.data-grid.five{grid-template-columns:repeat(3,minmax(0,1fr))}.toolbar{padding:10px 12px}.btn{padding:8px 11px}}
+@media(max-width:470px){h1{font-size:27px}.grid,.grid.three,.party-grid,.data-grid.four,.data-grid.three,.data-grid.five,.clauses,.signatures{grid-template-columns:1fr}.field.wide{grid-column:auto}.preview-heading{padding:16px}.preview-heading small{display:none}.contract-paper{padding:25px 18px 24px}.toolbar{gap:6px}.btn{font-size:11px;padding:8px 9px}}
+@page{size:A4 portrait;margin:0}
+@media print{
+  html,body{width:210mm;height:297mm;background:#fff}
+  body{padding:0}
+  .app-header,.editor-card,.preview-heading,.toolbar,.notice{display:none!important}
+  .page,.preview-card{width:210mm;max-width:none;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:#fff}
+  .preview-shell{padding:0;overflow:visible;background:#fff;border:0}
+  .contract-paper{width:210mm;height:297mm;min-height:297mm;margin:0;padding:12mm 13mm 10mm;box-shadow:none;font-size:10.5pt;line-height:1.32}
+  .paper-header{padding-bottom:8px;margin-bottom:9px}.paper-header h2{font-size:21pt}.paper-header p{font-size:9.5pt}
+  .paper-section{margin-bottom:7px}.section-heading{margin-bottom:4px}.section-heading h3{font-size:11pt}.section-no{width:17px;height:17px;font-size:9px}
+  .party-box,.property-box,.extra-box,.data-cell{padding:5px 7px}.party-box h4{font-size:9.5pt}.party-row{min-height:15px}.data-cell .key{font-size:8.5pt}.data-cell .value{min-height:15px}.clauses{gap:2px 12px}.clauses li{font-size:8.8pt;line-height:1.3;padding-left:20px}.clauses li::before{font-size:8.5pt}.extra-box{min-height:30px;font-size:9.5pt}.signatures{margin-top:9px;padding-top:7px;gap:18px}.signature{font-size:9.5pt}.signature .line{height:20px}.paper-foot{margin-top:8px;font-size:7.5pt}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="app-header">
+    <div class="eyebrow">DOCUMENT TOOL · RENTAL AGREEMENT</div>
+    <h1>เครื่องมือกรอกสัญญาเช่าบ้าน</h1>
+    <p>กรอกข้อมูลด้านล่าง แล้วตรวจดูแบบสัญญาแบบหน้าเดียวก่อนพิมพ์หรือบันทึกเป็น PDF ข้อมูลจะถูกเก็บไว้ในเบราว์เซอร์เครื่องนี้</p>
+  </header>
+
+  <section class="editor-card form-area" aria-label="ข้อมูลสำหรับจัดทำสัญญา">
+    <section class="editor-section">
+      <h2>1. คู่สัญญา</h2>
+      <div class="grid">
+        <div class="field"><label for="landlord">ผู้ให้เช่า — ชื่อและนามสกุล</label><input id="landlord" autocomplete="name"></div>
+        <div class="field"><label for="tenant">ผู้เช่า — ชื่อและนามสกุล</label><input id="tenant" autocomplete="name"></div>
+        <div class="field"><label for="landlordId">เลขประจำตัวประชาชนผู้ให้เช่า</label><input id="landlordId" inputmode="numeric"></div>
+        <div class="field"><label for="tenantId">เลขประจำตัวประชาชนผู้เช่า</label><input id="tenantId" inputmode="numeric"></div>
+        <div class="field"><label for="landlordPhone">โทรศัพท์ผู้ให้เช่า</label><input id="landlordPhone" inputmode="tel"></div>
+        <div class="field"><label for="tenantPhone">โทรศัพท์ผู้เช่า</label><input id="tenantPhone" inputmode="tel"></div>
+      </div>
+    </section>
+
+    <section class="editor-section">
+      <h2>2. บ้านที่ให้เช่า</h2>
+      <div class="field"><label for="address">ที่อยู่บ้าน / รายละเอียดสถานที่เช่า</label><textarea id="address"></textarea></div>
+    </section>
+
+    <section class="editor-section">
+      <h2>3. ค่าเช่าและเงินที่ชำระก่อนเข้าอยู่</h2>
+      <div class="grid three">
+        <div class="field"><label for="rent">ค่าเช่ารายเดือน (บาท)</label><input id="rent" inputmode="decimal"></div>
+        <div class="field"><label for="advance">ค่าเช่าล่วงหน้า (บาท)</label><input id="advance" inputmode="decimal"><div class="hint">นำไปใช้เป็นค่าเช่างวดสุดท้าย</div></div>
+        <div class="field"><label for="deposit">เงินประกันการเช่า (บาท)</label><input id="deposit" inputmode="decimal"><div class="hint">คืนหลังหักยอดค้างและความเสียหายจริง</div></div>
+        <div class="field"><label for="due">ชำระค่าเช่าภายในวันที่</label><input id="due" type="number" min="1" max="31"></div>
+      </div>
+    </section>
+
+    <section class="editor-section">
+      <h2>4. ค่าน้ำ ค่าไฟ และค่าใช้จ่าย</h2>
+      <div class="grid three">
+        <div class="field"><label for="water">ค่าน้ำ</label><input id="water" placeholder="เช่น ตามมิเตอร์"></div>
+        <div class="field"><label for="electric">ค่าไฟ</label><input id="electric" placeholder="เช่น ตามบิลการไฟฟ้า"></div>
+        <div class="field"><label for="other">ค่าใช้จ่ายอื่น (ถ้ามี)</label><input id="other" placeholder="เช่น ไม่มี"></div>
+      </div>
+    </section>
+
+    <section class="editor-section">
+      <h2>5. ระยะเวลาเช่า</h2>
+      <div class="grid">
+        <div class="field"><label for="signDate">วันที่ทำสัญญา</label><input id="signDate" type="date"></div>
+        <div class="field"><label for="startDate">วันเริ่มเช่า</label><input id="startDate" type="date"></div>
+        <div class="field"><label for="endDate">วันสิ้นสุด</label><input id="endDate" type="date"></div>
+        <div class="field"><label for="notice">แจ้งย้ายออกล่วงหน้า</label><input id="notice" placeholder="เช่น 30 วัน"></div>
+        <div class="field"><label for="occupants">จำนวนผู้พักอาศัย</label><input id="occupants" type="number" min="1"></div>
+      </div>
+    </section>
+
+    <section class="editor-section">
+      <h2>6. ข้อตกลงเพิ่มเติม</h2>
+      <div class="field"><label for="extra">รายละเอียดเพิ่มเติม</label><textarea id="extra" placeholder="เช่น ห้ามสูบบุหรี่ภายในบ้าน / เลี้ยงสัตว์ได้เฉพาะภายนอกบ้าน"></textarea></div>
+    </section>
+    <div class="notice">เอกสารนี้เป็นเครื่องมือจัดทำแบบร่างตามแบบฟอร์มที่ให้มา ไม่ใช่คำแนะนำทางกฎหมาย ควรตรวจสอบเงื่อนไขและข้อมูลให้ถูกต้องก่อนลงนาม</div>
+  </section>
+
+  <section class="preview-card">
+    <div class="preview-heading"><h2>ตัวอย่างสัญญา</h2><small>อัปเดตอัตโนมัติ · รูปแบบ A4 หน้าเดียว</small></div>
+    <div class="preview-shell"><article class="contract-paper" id="preview" aria-live="polite"></article></div>
+  </section>
+</main>
+
+<nav class="toolbar" aria-label="เครื่องมือเอกสาร">
+  <button class="btn" id="reset" type="button">ล้างข้อมูล</button>
+  <button class="btn" id="print" type="button">พิมพ์ / บันทึก PDF</button>
+  <button class="btn primary" id="copy" type="button">คัดลอกข้อความ</button>
+</nav>
+
+<script>
+(function(){
+  'use strict';
+  const STORAGE_KEY='rental-contract-draft';
+  const ids=['landlord','tenant','landlordId','tenantId','landlordPhone','tenantPhone','address','rent','advance','deposit','due','water','electric','other','signDate','startDate','endDate','notice','occupants','extra'];
+  const $=id=>document.getElementById(id);
+  const value=id=>$(id).value.trim();
+  const safe=(text,fallback='—')=>text||fallback;
+  const esc=text=>String(text).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const dateTH=text=>{
+    if(!text)return '—';
+    const date=new Date(text+'T00:00:00');
+    return Number.isNaN(date.getTime())?'—':new Intl.DateTimeFormat('th-TH',{day:'numeric',month:'long',year:'numeric'}).format(date);
+  };
+  const field=(label,text)=>`<div class="data-cell"><span class="key">${esc(label)}</span><span class="value">${esc(safe(text))}</span></div>`;
+  const current=()=>ids.reduce((state,id)=>{state[id]=value(id);return state},{});
+
+  function buildText(){
+    const d=current();
+    return `สัญญาเช่าบ้าน\nวันที่ทำสัญญา: ${dateTH(d.signDate)}\n\n1. คู่สัญญา\nผู้ให้เช่า: ${safe(d.landlord)}\nเลขประจำตัวประชาชน: ${safe(d.landlordId)}    โทรศัพท์: ${safe(d.landlordPhone)}\nผู้เช่า: ${safe(d.tenant)}\nเลขประจำตัวประชาชน: ${safe(d.tenantId)}    โทรศัพท์: ${safe(d.tenantPhone)}\n\n2. บ้านที่ให้เช่า\nที่อยู่ / รายละเอียดสถานที่เช่า: ${safe(d.address)}\n\n3. ค่าเช่าและเงินที่ชำระก่อนเข้าอยู่\nค่าเช่ารายเดือน: ${safe(d.rent)} บาท ชำระภายในวันที่ ${safe(d.due)} ของทุกเดือน\nค่าเช่าล่วงหน้า: ${safe(d.advance)} บาท — ใช้เป็นค่าเช่างวดสุดท้าย ไม่ถือเป็นเงินประกัน\nเงินประกันการเช่า: ${safe(d.deposit)} บาท — คืนเมื่อย้ายออกหลังหักยอดค้างและความเสียหายจริง\n\n4. ค่าน้ำ ค่าไฟ และค่าใช้จ่าย\nค่าน้ำ: ${safe(d.water)}\nค่าไฟ: ${safe(d.electric)}\nค่าใช้จ่ายอื่น: ${safe(d.other)}\n(ชำระแยกจากค่าเช่ารายเดือน)\n\n5. ระยะเวลาเช่า\nวันเริ่มเช่า: ${dateTH(d.startDate)}    วันสิ้นสุด: ${dateTH(d.endDate)}\nแจ้งย้ายออกล่วงหน้า: ${safe(d.notice)}    จำนวนผู้พักอาศัย: ${safe(d.occupants)} คน\n\n6. ข้อตกลงสำคัญ\n01 ผู้เช่าใช้บ้านเพื่ออยู่อาศัย ดูแลบ้านและทรัพย์สินให้อยู่ในสภาพเรียบร้อยตามสมควร\n02 ห้ามให้เช่าช่วง ต่อเติม หรือดัดแปลงส่วนสำคัญของบ้านโดยไม่ได้รับความยินยอมจากผู้ให้เช่า\n03 ค่าน้ำ ค่าไฟ และค่าใช้จ่ายที่ระบุข้างต้น ชำระแยกจากค่าเช่ารายเดือน\n04 ค่าเช่าล่วงหน้าใช้เป็นค่าเช่างวดสุดท้าย ไม่ถือเป็นเงินประกัน และไม่นำไปหักความเสียหาย\n05 เงินประกันคืนหลังผู้เช่าย้ายออก ส่งคืนกุญแจ และชำระยอดค้างครบถ้วน โดยหักได้เฉพาะค่าใช้จ่ายหรือความเสียหายที่เกิดขึ้นจริง\n06 เมื่อสิ้นสุดการเช่า ผู้เช่าต้องคืนบ้านและทรัพย์สินในสภาพเรียบร้อยตามการใช้งานปกติ และชำระค่าใช้จ่ายค้างทั้งหมด\n\n7. ข้อตกลงเพิ่มเติม\n${safe(d.extra,'ไม่มี')}\n\nลงชื่อผู้ให้เช่า: ______________________________    วันที่: ______________\nลงชื่อผู้เช่า: ________________________________    วันที่: ______________\n\nพยาน: _______________________________________    พยาน: _______________________________________`;
+  }
+
+  function buildPreview(){
+    const d=current();
+    return `<header class="paper-header"><div class="paper-kicker">เอกสารแบบร่างเพื่อการตรวจสอบก่อนลงนาม</div><h2>สัญญาเช่าบ้าน</h2><p>ทำขึ้น ณ วันที่ <strong>${esc(dateTH(d.signDate))}</strong></p></header>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">1</span><h3>คู่สัญญา</h3></div><div class="party-grid"><div class="party-box"><h4>ผู้ให้เช่า</h4><div class="party-row"><span class="key">ชื่อ–นามสกุล</span><span class="value">${esc(safe(d.landlord))}</span></div><div class="party-row"><span class="key">เลขประจำตัวประชาชน</span><span class="value">${esc(safe(d.landlordId))}</span></div><div class="party-row"><span class="key">โทรศัพท์</span><span class="value">${esc(safe(d.landlordPhone))}</span></div></div><div class="party-box"><h4>ผู้เช่า</h4><div class="party-row"><span class="key">ชื่อ–นามสกุล</span><span class="value">${esc(safe(d.tenant))}</span></div><div class="party-row"><span class="key">เลขประจำตัวประชาชน</span><span class="value">${esc(safe(d.tenantId))}</span></div><div class="party-row"><span class="key">โทรศัพท์</span><span class="value">${esc(safe(d.tenantPhone))}</span></div></div></div></section>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">2</span><h3>บ้านที่ให้เช่า</h3></div><div class="property-box">${esc(safe(d.address))}</div></section>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">3</span><h3>ค่าเช่าและเงินที่ชำระก่อนเข้าอยู่</h3></div><div class="data-grid four">${field('ค่าเช่ารายเดือน',safe(d.rent)+' บาท')}${field('ค่าเช่าล่วงหน้า',safe(d.advance)+' บาท')}${field('เงินประกันการเช่า',safe(d.deposit)+' บาท')}${field('ชำระภายในวันที่',safe(d.due)+' ของทุกเดือน')}</div></section>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">4</span><h3>ค่าน้ำ ค่าไฟ และค่าใช้จ่าย</h3></div><div class="data-grid three">${field('ค่าน้ำ',d.water)}${field('ค่าไฟ',d.electric)}${field('ค่าใช้จ่ายอื่น',d.other)}</div></section>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">5</span><h3>ระยะเวลาเช่า</h3></div><div class="data-grid five">${field('วันที่ทำสัญญา',dateTH(d.signDate))}${field('วันเริ่มเช่า',dateTH(d.startDate))}${field('วันสิ้นสุด',dateTH(d.endDate))}${field('แจ้งย้ายออกล่วงหน้า',d.notice)}${field('ผู้พักอาศัย',safe(d.occupants)+' คน')}</div></section>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">6</span><h3>ข้อตกลงสำคัญ</h3></div><ol class="clauses"><li>ผู้เช่าใช้บ้านเพื่ออยู่อาศัย ดูแลบ้านและทรัพย์สินให้อยู่ในสภาพเรียบร้อยตามสมควร</li><li>ห้ามให้เช่าช่วง ต่อเติม หรือดัดแปลงส่วนสำคัญของบ้านโดยไม่ได้รับความยินยอมจากผู้ให้เช่า</li><li>ค่าน้ำ ค่าไฟ และค่าใช้จ่ายที่ระบุข้างต้น ชำระแยกจากค่าเช่ารายเดือน</li><li>ค่าเช่าล่วงหน้าใช้เป็นค่าเช่างวดสุดท้าย ไม่ถือเป็นเงินประกัน และไม่นำไปหักความเสียหาย</li><li>เงินประกันคืนหลังผู้เช่าย้ายออก ส่งคืนกุญแจ และชำระยอดค้างครบถ้วน โดยหักได้เฉพาะค่าใช้จ่ายหรือความเสียหายที่เกิดขึ้นจริง</li><li>เมื่อสิ้นสุดการเช่า ผู้เช่าต้องคืนบ้านและทรัพย์สินในสภาพเรียบร้อยตามการใช้งานปกติ และชำระค่าใช้จ่ายค้างทั้งหมด</li></ol></section>
+      <section class="paper-section"><div class="section-heading"><span class="section-no">7</span><h3>ข้อตกลงเพิ่มเติม</h3></div><div class="extra-box">${esc(safe(d.extra,'ไม่มี'))}</div></section>
+      <div class="signatures"><div class="signature"><div class="line"></div>ลงชื่อผู้ให้เช่า<br>วันที่ <span class="date-line"></span></div><div class="signature"><div class="line"></div>ลงชื่อผู้เช่า<br>วันที่ <span class="date-line"></span></div></div>
+      <div class="signatures"><div class="signature"><div class="line"></div>พยาน</div><div class="signature"><div class="line"></div>พยาน</div></div>
+      <div class="paper-foot">คู่สัญญาควรอ่านและตรวจสอบข้อมูลทุกข้อให้ถูกต้องก่อนลงนาม</div>`;
+  }
+
+  function saveDraft(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(current()))}catch(error){/* storage may be disabled */}}
+  function render(){ $('preview').innerHTML=buildPreview(); saveDraft(); }
+  function restoreDraft(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+      if(!saved||typeof saved!=='object')return;
+      ids.forEach(id=>{if(Object.prototype.hasOwnProperty.call(saved,id))$(id).value=String(saved[id]??'')});
+    }catch(error){/* ignore malformed or unavailable local storage */}
+  }
+
+  ids.forEach(id=>{ $(id).addEventListener('input',render); $(id).addEventListener('change',render); });
+  restoreDraft(); render();
+  $('print').addEventListener('click',()=>window.print());
+  $('reset').addEventListener('click',()=>{
+    if(!window.confirm('ล้างข้อมูลที่กรอกทั้งหมดหรือไม่?'))return;
+    ids.forEach(id=>$(id).value='');
+    render();
+    try{localStorage.removeItem(STORAGE_KEY)}catch(error){}
+  });
+  $('copy').addEventListener('click',function(){
+    const button=this; const text=buildText();
+    const fallback=()=>{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.focus();area.select();try{document.execCommand('copy')}finally{area.remove()}return Promise.resolve()};
+    const task=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(text):fallback();
+    task.then(()=>{button.textContent='คัดลอกแล้ว ✓';button.classList.add('success');setTimeout(()=>{button.textContent='คัดลอกข้อความ';button.classList.remove('success')},1400)},()=>window.alert('คัดลอกไม่สำเร็จ กรุณาเลือกข้อความจากตัวอย่างแล้วคัดลอก'));
+  });
+  window.rentalContract={ids,buildText,render};
+})();
+</script>
+</body>
+</html>
